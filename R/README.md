@@ -31,8 +31,8 @@ source('./utils.R')
 ```r
 # --- 2.1 calculate gene-peak correlation
 GPTab <- GPCor(cre.mat=cre.mat,  # peak-cell matrix, without normalization
-               exp.mat=rna.mat,  # normalized scRNA-seq matrix or gene activity matrix, without scaled
-               normalizeRNAMat=T, # if the rna matrix need normalization
+               exp.mat=rna.mat,  # scRNA-seq matrix or gene activity matrix
+               normalizeRNAMat=T, # if the rna matrix need normalization, Seurat::NormalizeData will be called
                genome = "macFas5", # reference genome, must be one of "hg19", "mm10", "hg38", or "macFas5"
                windowPadSize = 100000, # base pairs padded on either side of gene TSS
                proPadSize = 2000, # base pairs padded on either side of gene TSS for enhancer
@@ -42,7 +42,7 @@ save(GPTab, file = 'genePeakTab.Rdata')
 # --- 2.2 obtain significantly correlated peak-gene pairs
 # For determining the threshold value of estimate, namely peak-gene correlation, we advice to choose the value of quantile 95% of overall estimate using quantile(GPTab$estimate, seq(0,1,0.05))[['95%']]
 GPTabFilt <- FindNode(GPTab = GPTab, # data frame of gene-peak correlation
-                      genome = "hg19", # reference genome, must be one of "hg19", "mm10", or "hg38"
+                      genome = "macFas5", # reference genome, must be one of "hg19", "mm10", "hg38", or "macFas5"
                       estimate = 0, # the threshold value of peak-gene correlation to determine whether the peak-gene pair is significantly correlated
                       proPadSize = 2000, # base pairs padded on either side of gene TSS for enhancer
                       FDR = 0.05 # the threshold value of FDR to determine whether the peak-gene pair is significantly correlated
@@ -67,7 +67,7 @@ conns <- FindEdge(peaks.mat=cre.mat,  # peak-cell matrix
                   cellinfo=metadata,  # A data frame containing attributes of individual cells.
                   k=50, # Number of cells to aggregate per bin when generate an aggregated input CDS for cicero
                   coords=dcluster_coords, # A data frame with columns representing the coordinates of each cell in reduced dimension space (generally 2-3 dimensions).
-                  genome='hg19' # reference genome, must be one of "hg19", "mm10", or "hg38"
+                  genome='macFas5' # reference genome, must be one of "hg19", "mm10", "hg38", or "macFas5"
 )
 save(conns, file = 'conns_GPPairPeaks.Rdata')
 ```

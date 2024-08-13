@@ -4,14 +4,14 @@
 GPCor <- function(cre.mat=cre.mat,  # peak-cell matrix
                   exp.mat=rna.mat,  # scRNA-seq matrix or gene activity matrix
                   normalizeRNAMat=T, # if the rna matrix need normalization
-                  genome = "hg19", # reference genome, must be one of "hg19", "mm10", or "hg38"
+                  genome = "macFas5", # reference genome, must be one of "hg19", "mm10", or "hg38"
                   windowPadSize = 100000, # base pairs padded on either side of gene TSS
                   proPadSize = 2000, # base pairs padded on either side of gene TSS for enhancer
                   nCores=8 # How many registerCores to use
 ){
   # check genome
-  if(!genome %in% c("hg19", "hg38", "mm10")){
-    stop("You must specify one of hg19, hg38 or mm10 as a genome build for currently supported TSS annotations..\n")
+  if(!genome %in% c("hg19", "hg38", "mm10", "macFas5")){
+    stop("You must specify one of hg19, hg38, mm10, or macFas5 as a genome build for currently supported TSS annotations..\n")
   }
   
   # Normalize input matrix
@@ -59,16 +59,16 @@ GPCor <- function(cre.mat=cre.mat,  # peak-cell matrix
 ############## INPUT: 1. a dataframe of peak-gene correlation; 2. reference genome in Granges form
 ############## OUTPUT: A list of enhancer cluster
 FindNode <- function(GPTab, 
-                     genome = "hg19", # reference genome, must be one of "hg19", "mm10", or "hg38"
+                     genome = "macFas5", # reference genome, must be one of "hg19", "mm10", or "hg38"
                      estimate = 0, # the threshold value of peak-gene correlation to determine whether the peak-gene pair is significantly correlated
                      proPadSize = 2000, # base pairs padded on either side of gene TSS for enhancer
                      FDR = 0.05 # the threshold value of FDR to determine whether the peak-gene pair is significantly correlated
 ){
   # check genome
-  if(!genome %in% c("hg19", "hg38", "mm10")){
-    stop("You must specify one of hg19, hg38 or mm10 as a genome build for currently supported TSS annotations..\n")
+  if(!genome %in% c("hg19", "hg38", "mm10", "macFas5")){
+    stop("You must specify one of hg19, hg38, mm10, or macFas5 as a genome build for currently supported TSS annotations..\n")
   }
-  if(genome %in% c("hg19", "hg38", "mm10")){
+  if(genome %in% c("hg19", "hg38", "mm10", "macFas5")){
     load(paste0('../data/', genome, '_refSeq.Rdata'))
   }
   
@@ -104,11 +104,11 @@ FindEdge <- function(peaks.mat=cre.mat,  # peak-cell matrix
                      cellinfo=metadata,  # A data frame containing attributes of individual cells.
                      k=50, # Number of cells to aggregate per bin when generate an aggregated input CDS for cicero
                      coords=dcluster_coords, # A data frame with columns representing the coordinates of each cell in reduced dimension space (generally 2-3 dimensions). 
-                     genome='hg19' # reference genome, must be one of "hg19", "mm10", or "hg38"
+                     genome='macFas5' # reference genome, must be one of "hg19", "mm10", or "hg38"
 ){
   # check genome
-  if (!genome %in% c("hg19", "hg38", "mm10"))
-    stop("You must specify one of hg19, hg38 or mm10 as a genome build for currently supported TSS annotations..\n")
+  if (!genome %in% c("hg19", "hg38", "mm10", "macFas5"))
+    stop("You must specify one of hg19, hg38, mm10, macFas5 as a genome build for currently supported TSS annotations..\n")
   
   indata <- peaks.mat[unique(unlist(GPPair)),]
   dim(indata)

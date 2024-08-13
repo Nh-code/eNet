@@ -30,10 +30,10 @@ source('./utils.R')
 ### Step 2. Identifying the putative enhancer cluster (Node)
 ```r
 # --- 2.1 calculate gene-peak correlation
-GPTab <- GPCor(cre.mat=cre.mat,  # peak-cell matrix
-               exp.mat=rna.mat,  # scRNA-seq matrix or gene activity matrix
+GPTab <- GPCor(cre.mat=cre.mat,  # peak-cell matrix, without normalization
+               exp.mat=rna.mat,  # normalized scRNA-seq matrix or gene activity matrix, without scaled
                normalizeRNAMat=T, # if the rna matrix need normalization
-               genome = "hg19", # reference genome, must be one of "hg19", "mm10", or "hg38"
+               genome = "macFas5", # reference genome, must be one of "hg19", "mm10", "hg38", or "macFas5"
                windowPadSize = 100000, # base pairs padded on either side of gene TSS
                proPadSize = 2000, # base pairs padded on either side of gene TSS for enhancer
                nCores=8 # How many registerCores to use

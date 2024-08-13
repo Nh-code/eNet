@@ -58,7 +58,7 @@ centerCounts <- function(obj,
 #Gene peak overlaps
 genePeakOv <- function(ATAC.se, # SummarizedExperiment object of scATAC data
                        RNAmat, # Paired normalized scRNA-seq data, with gene names as rownames
-                       genome, # Must be one of "hg19", "mm10", or "hg38"
+                       genome, # Must be one of "hg19", "mm10", "hg38", "macFas5"
                        geneList=NULL, # 2 or more valid gene symbols (if only running on subset of genes)
                        windowPadSize=100000, # base pairs padded on either side of gene TSS
                        proPadSize = 2000 # base pairs padded on either side of gene TSS for enhancer
@@ -102,16 +102,10 @@ genePeakOv <- function(ATAC.se, # SummarizedExperiment object of scATAC data
   cat("Number of genes in RNA data:",nrow(RNAmat),"\n")
   
   
-  if (!genome %in% c("hg19", "hg38", "mm10"))
-    stop("You must specify one of hg19, hg38 or mm10 as a genome build for currently supported TSS annotations..\n")
-  # switch(genome, hg19 = {
-  #   TSSg <- hg19TSSRanges
-  # }, hg38 = {
-  #   TSSg <- hg38TSSRanges
-  # }, mm10 = {
-  #   TSSg <- mm10TSSRanges
-  # })
-  if(genome %in% c("hg19", "hg38", "mm10")){
+  if (!genome %in% c("hg19", "hg38", "mm10", "macFas5"))
+    stop("You must specify one of hg19, hg38, mm10, or "macFas5" as a genome build for currently supported TSS annotations..\n")
+
+  if(genome %in% c("hg19", "hg38", "mm10", "macFas5")){
     load(paste0('../data/', genome, '_refSeq.Rdata'))
     TSSg <- get(paste0(genome, 'TSSRanges'))
   }

@@ -4,7 +4,7 @@ eNet is an algorithm designed to integrate single-cell chromatin accessibility a
 
 ## Workflow
 ![image](https://user-images.githubusercontent.com/95668602/168198245-f0fe872f-a1f7-4389-8abe-f50d6c94e7f4.png)
-See https://github.com/xmuhuanglab/eNet/blob/main/R/README.md for more detailed tutorial.
+See [https://github.com/xmuhuanglab/eNet/blob/main/R/README.md](https://github.com/Nh-code/eNet/blob/main/R/README.md) for more detailed tutorial.
 
 ## How to cite eNet
 1. Danni Hong#, Hongli Lin#, Lifang Liu, Muya Shu, Jianwu Dai, Falong Lu, Jialiang Huang*. Complexity of enhancer networks predicts cell identity and disease genes. (Submitted)

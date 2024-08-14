@@ -205,18 +205,6 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   data.use = ATAC[idy,];
   peak.use = peak.raw[uniquepeaks];
   
-  # shuf set
-  data.shuf <- data.use
-  peak.shuf <- peak.use
-  colheader <- colnames(data.shuf)
-  #Shuffle row-wise:
-  set.seed(seed)
-  data.shuf <- data.shuf[sample(nrow(data.shuf)),]
-  #Shuffle column-wise:
-  set.seed(seed)
-  data.shuf <- data.shuf[,sample(ncol(data.shuf))]
-  colnames(data.shuf) <- colheader
-  
   corrFunc <- function(var1, var2, method) {
     result = cor.test(var1, var2, method = method)
     data.frame(result[c("estimate","p.value","statistic")],
@@ -241,30 +229,9 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   
   cat("Done ... \n", file = stderr())
   
-  #------------------------------
-  cat("Shuffle set: performing statitical test on... \n", file = stderr())
-  peaks.id = seq(nrow(data.shuf));
-  corr = lapply(peaks.id, function(t){
-    corrFunc(as.numeric(gene.val), as.numeric(data.shuf[t,]), mtd)
-  })
-  corr <- do.call(rbind, corr)
-  
-  peak.shuf$estimate <- corr[, "estimate"]
-  peak.shuf$statistic <- corr[, "statistic"]
-  peak.shuf$method <- mtd
-  peak.shuf$Pval <- corr[, "p.value"]
-  peak.shuf$FDR <- p.adjust(peak.shuf$Pval, method = "BH")
-  peak.shuf$class <- "shuf"
-  peak.shuf$Gene <- gene.name
-  
-  cat("Done ... \n", file = stderr())
-  
   #############################
   # OUTPUT
-  peak.use.df <- as.data.frame(peak.use)
-  peak.shuf.df <- as.data.frame(peak.shuf)
-  peak.df <- rbind(peak.use.df, peak.shuf.df)
-  return(peak.df);
+  return( as.data.frame(peak.use) );
 }
 
 

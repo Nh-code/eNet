@@ -202,7 +202,7 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   data.raw = ATAC
   peak.raw = peakRanges
   # use set
-  data.use = ATAC[idy,];
+  data.use = ATAC[idy,,drop = FALSE];
   peak.use = peak.raw[uniquepeaks];
   
   corrFunc <- function(var1, var2, method) {

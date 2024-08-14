@@ -162,7 +162,7 @@ BuildNetwork <- function(conns=conns, # A data frame of co-accessibility scores,
   conns$Peak2 <- as.character(conns$Peak2)
   
   #---
-  genes <- unique(GPTabFilt$Gene)
+  genes <- unique(GPTab$Gene)
   
   getDoParRegistered()
   registerDoParallel(nCores) # registerCores
@@ -170,7 +170,7 @@ BuildNetwork <- function(conns=conns, # A data frame of co-accessibility scores,
   NetworkList <- foreach(g=genes,.inorder=TRUE,
                          .errorhandling = 'remove') %dopar% {
                            cat("Running gene: ",g,which(genes == g),"\n")
-                           GPTabFilt_g <- GPTabFilt %>% filter(Gene == g)
+                           GPTabFilt_g <- GPTab %>% filter(Gene == g)
                            eNet <- Network(conns = conns,
                                            GPTab = GPTabFilt_g,
                                            cutoff = cutoff)
@@ -199,7 +199,7 @@ NetComplexity <- function(conns=conns, # A data frame of co-accessibility scores
   conns$Peak2 <- as.character(conns$Peak2)
   
   #---
-  genes <- unique(GPTabFilt$Gene)
+  genes <- unique(GPTab$Gene)
   
   library(doParallel)
   getDoParRegistered()
@@ -210,7 +210,7 @@ NetComplexity <- function(conns=conns, # A data frame of co-accessibility scores
   Networkinfo <- foreach(g=genes,.inorder=TRUE,.combine = 'rbind',
                          .errorhandling = 'remove') %dopar% {
                            cat("Running gene: ",g,which(genes == g),"\n")
-                           GPTabFilt_g <- GPTabFilt %>% filter(Gene == g)
+                           GPTabFilt_g <- GPTab %>% filter(Gene == g)
                            Tab <- NetworkComplexity(net = NetworkList[[g]],
                                                     gene = g,
                                                     GPTab = GPTabFilt_g)

@@ -217,27 +217,6 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   data.shuf <- data.shuf[,sample(ncol(data.shuf))]
   colnames(data.shuf) <- colheader
   
-  # rdm set
-  set.seed(seed)
-  
-  #    rdm <- sample(idyexcl, 1000)
-  rdm <- sample(idyexcl, ovlpn)
-  data.rdm = data.raw[rdm,];
-  peak.rdm = peak.raw[rdm];
-  
-  
-  # rdm shuf set
-  data.rdmshuf <- data.rdm
-  peak.rdmshuf <- peak.rdm
-  colheader <- colnames(data.rdmshuf)
-  #Shuffle row-wise:
-  set.seed(seed)
-  data.rdmshuf <- data.rdmshuf[sample(nrow(data.rdmshuf)),]
-  #Shuffle column-wise:
-  set.seed(seed)
-  data.rdmshuf <- data.rdmshuf[,sample(ncol(data.rdmshuf))]
-  colnames(data.rdmshuf) <- colheader
-  
   corrFunc <- function(var1, var2, method) {
     result = cor.test(var1, var2, method = method)
     data.frame(result[c("estimate","p.value","statistic")],
@@ -260,10 +239,10 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   peak.use$class <- "corr"
   peak.use$Gene <- gene.name
   
-  #cat("Done ... \n", file = stderr())
+  cat("Done ... \n", file = stderr())
   
   #------------------------------
-  #cat("Shuffle set: performing statitical test on... \n", file = stderr())
+  cat("Shuffle set: performing statitical test on... \n", file = stderr())
   peaks.id = seq(nrow(data.shuf));
   corr = lapply(peaks.id, function(t){
     corrFunc(as.numeric(gene.val), as.numeric(data.shuf[t,]), mtd)
@@ -278,54 +257,14 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   peak.shuf$class <- "shuf"
   peak.shuf$Gene <- gene.name
   
-  #cat("Done ... \n", file = stderr())
-  
-  #--------------------------------
-  #cat("Random set: performing statitical test on... \n", file = stderr())
-  peaks.id = seq(nrow(data.rdm));
-  corr = lapply(peaks.id, function(t){
-    corrFunc(as.numeric(gene.val), as.numeric(data.rdm[t,]), mtd)
-  })
-  corr <- do.call(rbind, corr)
-  
-  peak.rdm$estimate <- corr[, "estimate"]
-  peak.rdm$statistic <- corr[, "statistic"]
-  peak.rdm$method <- mtd
-  peak.rdm$Pval <- corr[, "p.value"]
-  peak.rdm$FDR <- p.adjust(peak.rdm$Pval, method = "BH")
-  peak.rdm$class <- "random"
-  peak.rdm$Gene <- gene.name
-  #cat("Done ... \n", file = stderr())
-  
-  
-  #----------------------
-  #cat("Rdmshuf set: performing statitical test on... \n", file = stderr())
-  peaks.id = seq(nrow(data.rdmshuf));
-  corr = lapply(peaks.id, function(t){
-    corrFunc(as.numeric(gene.val), as.numeric(data.rdmshuf[t,]), mtd)
-  })
-  corr <- do.call(rbind, corr)
-  peak.rdmshuf$estimate <- corr[, "estimate"]
-  peak.rdmshuf$statistic <- corr[, "statistic"]
-  peak.rdmshuf$method <- mtd
-  peak.rdmshuf$Pval <- corr[, "p.value"]
-  peak.rdmshuf$FDR <- p.adjust(peak.rdmshuf$Pval, method = "BH")
-  peak.rdmshuf$class <- "rdmShuf"
-  peak.rdmshuf$Gene <- gene.name
-  #cat("Done ... \n", file = stderr())
+  cat("Done ... \n", file = stderr())
   
   #############################
   # OUTPUT
   peak.use.df <- as.data.frame(peak.use)
   peak.shuf.df <- as.data.frame(peak.shuf)
-  peak.rdm.df <- as.data.frame(peak.rdm)
-  peak.rdmshuf.df <- as.data.frame(peak.rdmshuf)
   peak.df <- rbind(peak.use.df, peak.shuf.df)
-  peak.df <- rbind(peak.df, peak.rdm.df)
-  peak.df <- rbind(peak.df, peak.rdmshuf.df)
-  
   return(peak.df);
-  
 }
 
 

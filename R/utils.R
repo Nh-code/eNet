@@ -207,17 +207,15 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   
   corrFunc <- function(var1, var2, method) {
     result = cor.test(var1, var2, method = method)
-    data.frame(result[c("estimate","p.value","statistic")],
-               stringsAsFactors=FALSE)
+    data.frame(result[c("estimate","p.value","statistic")], stringsAsFactors=FALSE)
   }
   
   #-----------------------------------
-  cat("Real set: performing statitical test on... \n", file = stderr())
+  # cat("Real set: performing statitical test on... \n", file = stderr())
   peaks.id = seq(nrow(data.use));
   corr = lapply(peaks.id, function(t){
     corrFunc(as.numeric(gene.val), as.numeric(data.use[t,]), mtd)
-  })
-  corr <- do.call(rbind, corr)
+  }) %>% bind_rows()
   
   peak.use$estimate <- corr[, "estimate"]
   peak.use$statistic <- corr[, "statistic"]

@@ -8,16 +8,8 @@ Five input files are needed for eNet:
  6. Reference genome of "macFas5" was build from Macaca_fascicularis_5.0.91.2.2.gtf
 ### Step 1. Preparing input data (Input)
 ```r
-setwd("workdir")
-rm(list = ls())
-library(Signac)
-library(IRanges)
-library(Seurat)
-library(reshape2)
-library(TFBSTools)
-library(dplyr)
-library(SummarizedExperiment)
-library(Matrix)
+pacman::p_load(Seurat,Signac,dplyr,IRanges,reshape2,TFBSTools,SummarizedExperiment,Matrix)
+options(future.globals.maxSize = 1e+12)
 
 # ---------- Load scRNA matrix and scATAC matrix
 cre.mat <- readRDS("../data/cre.mat.Rds") # peak-cell matrix
@@ -50,11 +42,7 @@ GPTabFilt <- FindNode(GPTab = GPTab, # data frame of gene-peak correlation
 )
 save(GPTabFilt, file = 'genePeakTabFilt.Rdata')
 # --- 2.3 convert the table of gene-peak pairs to a list of enhancer cluster
-GPPair <- list()
-for(i in unique(GPTabFilt$Gene)){
-  tmp <- subset(GPTabFilt, Gene == i)
-  GPPair[[i]] <- as.character(tmp$Peak)
-}
+GPPair <- split(GPTabFilt$Peak, GPTabFilt$Gene)
 save(GPPair, file = 'GPPair.Rdata')
 ```
 ### Step 3. Identifying the predicted enhancer interactions (Edge)

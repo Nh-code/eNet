@@ -38,7 +38,7 @@ GPCor <- function(cre.mat=cre.mat,  # peak-cell matrix
   genes <- as.character(unique(Ov$gene_name))
   
   future::plan("multicore", workers = as.numeric(nCores))
-  GPTab <- pbapply::pblapply(genes[1:10], function(g) {
+  GPTab <- pbapply::pblapply(genes, function(g) {
     Ovd <- Ov %>% filter(gene_name == g)
     ObsCor <- PeakGeneCor(ATAC = cre.mat,
                           RNA = rna.mat,

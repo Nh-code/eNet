@@ -220,7 +220,7 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   data.shuf <- data.shuf[sample(nrow(data.shuf)),]
   #Shuffle column-wise:
   set.seed(seed)
-  data.shuf <- data.shuf[,sample(ncol(data.shuf)), with=F]
+  data.shuf <- data.shuf[,sample(ncol(data.shuf))]
   colnames(data.shuf) <- colheader
   
   # rdm set
@@ -241,7 +241,7 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   data.rdmshuf <- data.rdmshuf[sample(nrow(data.rdmshuf)),]
   #Shuffle column-wise:
   set.seed(seed)
-  data.rdmshuf <- data.rdmshuf[,sample(ncol(data.rdmshuf)), with=F]
+  data.rdmshuf <- data.rdmshuf[,sample(ncol(data.rdmshuf))]
   colnames(data.rdmshuf) <- colheader
   
   corrFunc <- function(var1, var2, method) {

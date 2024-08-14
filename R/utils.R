@@ -224,7 +224,7 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   }
   
   #-----------------------------------
-  #cat("Real set: performing statitical test on... \n", file = stderr())
+  cat("Real set: performing statitical test on... \n", file = stderr())
   peaks.id = seq(nrow(data.use));
   corr = lapply(peaks.id, function(t){
     corrFunc(as.numeric(gene.val), as.numeric(data.use[t,]), mtd)

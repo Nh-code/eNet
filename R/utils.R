@@ -225,7 +225,7 @@ PeakGeneCor <- function(ATAC, # Normalized reads in peaks counts (rownames shoul
   peak.use$class <- "corr"
   peak.use$Gene <- gene.name
   
-  cat("Done ... \n", file = stderr())
+  # cat("Done ... \n", file = stderr())
   
   #############################
   # OUTPUT

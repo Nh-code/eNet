@@ -40,8 +40,7 @@ GPCor <- function(cre.mat=cre.mat,  # peak-cell matrix
   getDoParRegistered()
   registerDoParallel(nCores) # registerCores
   
-  GPTab <- foreach(g=genes,.combine = 'rbind',.inorder=TRUE,
-                   .errorhandling = 'remove') %dopar% {
+  GPTab <- foreach(g=genes,.combine = 'rbind',.inorder=TRUE) %dopar% {
                      cat("Running gene: ",g,which(genes == g),"\n")
                      Ovd <- Ov %>% filter(gene_name == g)
                      ObsCor   <- PeakGeneCor(ATAC = cre.mat,

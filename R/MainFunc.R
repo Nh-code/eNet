@@ -96,7 +96,7 @@ FindNode <- function(GPTab,
 ############## OUTPUT: A data frame of co-accessibility scores
 FindEdge <- function(peaks.mat=cre.mat,  # peak-cell matrix
                      GPPair=GPPair, # A list of enhancer cluster, the output of Step.2
-                     cellinfo=metadata,  # A data frame containing attributes of individual cells.
+                     cellinfo=NULL,  # A data frame containing attributes of individual cells.
                      k=50, # Number of cells to aggregate per bin when generate an aggregated input CDS for cicero
                      coords=dcluster_coords, # A data frame with columns representing the coordinates of each cell in reduced dimension space (generally 2-3 dimensions). 
                      genome='macFas5' # reference genome, must be one of "hg19", "mm10", or "hg38"
@@ -106,27 +106,20 @@ FindEdge <- function(peaks.mat=cre.mat,  # peak-cell matrix
     stop("You must specify one of hg19, hg38, mm10, macFas5 as a genome build for currently supported TSS annotations..\n")
   
   indata <- peaks.mat[unique(unlist(GPPair)),]
-  dim(indata)
   # binarize the matrix
   indata@x[indata@x > 0] <- 1
-  # format cell info
-  # metadata <- atac@meta.data
   # format peak info
   peakinfo <- as.data.frame(rownames(indata))
   rownames(peakinfo) <- peakinfo[,1]
   names(peakinfo) <- "site_name"
   
-  input_cds <-  suppressWarnings(new_cell_data_set(indata,
-                                                   cell_metadata = metadata,
-                                                   gene_metadata = peakinfo))
-  
+  input_cds <- suppressWarnings(new_cell_data_set(indata, cell_metadata = cellinfo, gene_metadata = peakinfo))
   input_cds <- monocle3::detect_genes(input_cds)
   
   #Ensure there are no peaks included with zero reads
   input_cds <- input_cds[Matrix::rowSums(exprs(input_cds)) != 0,] 
   
   ###Create a Cicero CDS
-  # dcluster_coords <- atac@reductions[["umap"]]@cell.embeddings
   cicero_cds <- make_cicero_cds(input_cds, reduced_coordinates = dcluster_coords, k = k) 
   
   ###Run Cicero

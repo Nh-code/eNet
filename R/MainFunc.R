@@ -36,21 +36,17 @@ GPCor <- function(cre.mat=cre.mat,  # peak-cell matrix
   
   #---
   genes <- as.character(unique(Ov$gene_name))
-  library(doParallel)
-  getDoParRegistered()
-  registerDoParallel(nCores) # registerCores
   
-  GPTab <- foreach(g=genes,.combine = 'rbind',.inorder=TRUE) %dopar% {
-                     cat("Running gene: ",g,which(genes == g),"\n")
-                     Ovd <- Ov %>% filter(gene_name == g)
-                     ObsCor   <- PeakGeneCor(ATAC = cre.mat,
-                                             RNA = rna.mat,
-                                             peakRanges = peaks,
-                                             OV = Ovd)
-                     
-                   }
+  future::plan("multicore", workers = as.numeric(nCores))
+  GPTab <- pbapply::pblapply(genes[1:10], function(g) {
+    Ovd <- Ov %>% filter(gene_name == g)
+    ObsCor <- PeakGeneCor(ATAC = cre.mat,
+                          RNA = rna.mat,
+                          peakRanges = peaks,
+                          OV = Ovd)
+    return(ObsCor)
+  }, cl = "future") %>% bind_rows() %>% tibble::remove_rownames()
   
-  closeAllConnections() # closed cores
   return(GPTab)
 }
 

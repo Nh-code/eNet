@@ -103,7 +103,7 @@ genePeakOv <- function(ATAC.se, # SummarizedExperiment object of scATAC data
   
   
   if (!genome %in% c("hg19", "hg38", "mm10", "macFas5"))
-    stop("You must specify one of hg19, hg38, mm10, or "macFas5" as a genome build for currently supported TSS annotations..\n")
+    stop("You must specify one of hg19, hg38, mm10, or macFas5 as a genome build for currently supported TSS annotations..\n")
 
   if(genome %in% c("hg19", "hg38", "mm10", "macFas5")){
     load(paste0('../data/', genome, '_refSeq.Rdata'))

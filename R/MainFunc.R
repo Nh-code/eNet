@@ -162,7 +162,8 @@ BuildNetwork <- function(conns=conns, # A data frame of co-accessibility scores,
         return(eNet)
     }, cl = "future")
     names(NetworkList) <- genes
-    
+    NetworkList <- Filter(Negate(is.null), NetworkList)
+  
     return(NetworkList)
 }
 

@@ -153,7 +153,7 @@ BuildNetwork <- function(conns=conns, # A data frame of co-accessibility scores,
     genes <- unique(GPTab$Gene)
     
     future::plan("multicore", workers = as.numeric(nCores))
-    NetworkList <- pblapply(genes, function(g) {
+    NetworkList <- pbapply::pblapply(genes, function(g) {
         # Filter the GPTab for the current gene
         GPTabFilt_g <- GPTab %>% filter(Gene == g)
         # Create the network for the gene
@@ -173,37 +173,32 @@ BuildNetwork <- function(conns=conns, # A data frame of co-accessibility scores,
 ############## OUTPUT: A data frame with 3 columns, including gene, NetworkSize and NetworkConnectivity
 NetComplexity <- function(conns=conns, # A data frame of co-accessibility scores, also the output of Step.3
                           GPTab=GPTabFilt,  # A list of enhancer cluster, the output of Step.2
-                          cutoff=0.1, # The cutoff of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
+                          cutoff=0.2, # The cutoff of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
                           nCores=8 # How many registerCores to use
 ){
-  
-  library(igraph)
-  library(dplyr)
-  
-  conns <- conns %>% filter(coaccess >= cutoff)
-  conns$Peak1 <- as.character(conns$Peak1)
-  conns$Peak2 <- as.character(conns$Peak2)
-  
-  #---
-  genes <- unique(GPTab$Gene)
-  
-  library(doParallel)
-  getDoParRegistered()
-  registerDoParallel(nCores) # registerCores
-  #g <- genes[1:1000]
-  
-  #---
-  Networkinfo <- foreach(g=genes,.inorder=TRUE,.combine = 'rbind',
-                         .errorhandling = 'remove') %dopar% {
-                           cat("Running gene: ",g,which(genes == g),"\n")
-                           GPTabFilt_g <- GPTab %>% filter(Gene == g)
-                           Tab <- NetworkComplexity(net = NetworkList[[g]],
-                                                    gene = g,
-                                                    GPTab = GPTabFilt_g)
-                           
-                         }
-  
-  return(Networkinfo)
+    
+    for (pkg in c("igraph","dplyr","pbapply")){library(pkg, character.only = TRUE)}
+    
+    conns <- conns %>% filter(coaccess >= cutoff)
+    conns$Peak1 <- as.character(conns$Peak1)
+    conns$Peak2 <- as.character(conns$Peak2)
+    
+    #---
+    genes <- unique(GPTab$Gene)
+    #---
+    ####
+    future::plan("multicore", workers = as.numeric(nCores))
+    Networkinfo <- pblapply(genes, function(g) {
+        GPTabFilt_g <- GPTab %>% filter(Gene == g)
+        return({
+            NetworkComplexity(net = NetworkList[[g]],gene = g,GPTab = GPTabFilt_g)
+        })
+        
+    }, cl = "future") %>% bind_rows()
+
+    return({
+        Networkinfo
+    })
 }
 
 

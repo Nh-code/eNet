@@ -257,7 +257,7 @@ NetworkMode <- function(Networkinfo=Networkinfo,  # Networkinfo is the output fi
       }
     }
 
-    return(FetchData(signacObj,vars = c('umap_1',"umap_2"))) %>% setNames(c('UMAP_1','UMAP_1'))
+    return( FetchData(signacObj,vars = c('UMAP_1',"UMAP_2"))  )
   }
 
 

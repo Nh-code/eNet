@@ -238,31 +238,16 @@ Network <- function(conns=conns, # A data frame of co-accessibility scores, also
                     GPTab=GPTabFilt,  # A list of enhancer cluster, the output of Step.2
                     cutoff=0.1 # The cutoff of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
 ){
-  se <- as.character(GPTab$Peak)
-  se <- se[order(se)]
-  conn <- conns %>% filter(Peak1 %in% se & Peak2 %in% se)
-  data <- matrix(nrow = length(se),ncol = length(se))
-  rownames(data) <- se
-  colnames(data) <- se
-  conn$coaccess[which(is.na(conn$coaccess))] <- 0
-  conn$coaccess[which(conn$coaccess < cutoff)] <- 0 
-  conn$coaccess[which(conn$coaccess >= cutoff)] <- 1
-  for (m in 1:nrow(data)) {
-    se1 <- se[m]
-    co <- conn[which(conn$Peak1 == se1),]
-    rownames(co) <- co$Peak2
-    co <- co[se[-m],]
-    data[m,-m] <- co$coaccess
-    data[m,m] <- 0
+  nodes <- as.vector(GPTab$Peak)
+  conn.sub <- conns %>% filter(Peak1 %in% nodes & Peak2 %in% nodes) %>% filter(coaccess >= cutoff) 
+  conn.sub <- conn.sub %>% setNames(c("from","to","weight"))
+  ### If the graph has no edges, return NULL
+  if (nrow(conn.sub) == 0 || ncol(conn.sub) == 0) {
+    return(NULL)
   }
-  data[is.na(data)] <- 0
-  rownames(data) <- colnames(data) <- 1:length(rownames(data))
-  if(max(data)>0){
-    net <- graph_from_adjacency_matrix(as.matrix(data), mode="undirected")
-    return(net)
-    #names(net) <- gene
-  }
-  
+  g <- igraph::graph_from_data_frame(d = conn.sub, vertices = data.frame(name = nodes), directed = FALSE) %>% 
+    simplify(remove.multiple = TRUE, remove.loops = TRUE, edge.attr.comb = "mean")
+  return(g)
 }
 
 # calculate several metrics for each enhancer network

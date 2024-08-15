@@ -145,27 +145,25 @@ BuildNetwork <- function(conns=conns, # A data frame of co-accessibility scores,
                          cutoff=0.1, # The cutoff of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
                          nCores=8 # How many registerCores to use
 ){
-  conns <- conns %>% filter(coaccess >= cutoff)
-  conns$Peak1 <- as.character(conns$Peak1)
-  conns$Peak2 <- as.character(conns$Peak2)
-  
-  #---
-  genes <- unique(GPTab$Gene)
-  
-  getDoParRegistered()
-  registerDoParallel(nCores) # registerCores
-  
-  NetworkList <- foreach(g=genes,.inorder=TRUE,
-                         .errorhandling = 'remove') %dopar% {
-                           cat("Running gene: ",g,which(genes == g),"\n")
-                           GPTabFilt_g <- GPTab %>% filter(Gene == g)
-                           eNet <- Network(conns = conns,
-                                           GPTab = GPTabFilt_g,
-                                           cutoff = cutoff)
-                         }
-  names(NetworkList) <- genes
-  
-  return(NetworkList)
+    conns <- conns %>% filter(coaccess >= cutoff)
+    conns$Peak1 <- as.character(conns$Peak1)
+    conns$Peak2 <- as.character(conns$Peak2)
+    
+    #---
+    genes <- unique(GPTab$Gene)
+    
+    future::plan("multicore", workers = as.numeric(nCores))
+    NetworkList <- pblapply(genes, function(g) {
+        # Filter the GPTab for the current gene
+        GPTabFilt_g <- GPTab %>% filter(Gene == g)
+        # Create the network for the gene
+        eNet <- Network(conns = conns, GPTab = GPTabFilt_g, cutoff = cutoff)
+        
+        return(eNet)
+    }, cl = "future")
+    names(NetworkList) <- genes
+    
+    return(NetworkList)
 }
 
 

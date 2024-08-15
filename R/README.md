@@ -65,18 +65,17 @@ save(conns, file = 'conns_GPPairPeaks.Rdata')
 ```
 ### Step 4. Building enhancer networks (Network)
 ```r
-library(igraph)
-library(dplyr)
-library(doParallel)
+pacman::p_load(igraph,dplyr)
+for (rdata in c("conns_GPPairPeaks.Rdata","genePeakTabFilt.Rdata")) { load(rdata) }
 # To determine the threshold value of co-accssibility score, we advice to choose the value around quantile 90%-95% using quantile(subset(conns, coaccess>0)$coaccess,seq(0,1,0.05),na.rm = T)
 NetworkList <- BuildNetwork(conns=conns, # A data frame of co-accessibility scores, also the output of Step.3
                             GPTab=GPTabFilt,  # a list of enhancer cluster, the output of Step.2
-                            cutoff=0.1, # the cutoff of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
+                            cutoff=0.2, # the cutoff of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
                             nCores=8 # How many cores to use
 )
-save(NetworkList, file = "NetworkList.Rdata")
 # Visualize the enhancer network
-plot.igraph(NetworkList[["ESPN"]])
+save(NetworkList, file = "NetworkList.Rdata")
+plot.igraph(upgrade_graph(NetworkList[["G6PC3"]]))
 ```
 ### Step 5. Calculating network complexity(Network complexity)
 ```r

@@ -81,9 +81,11 @@ FindNode <- function(GPTab,
   if(length(tmp)==0){
     GPTabFilt <- GPTabFilt
   }
-  # Remove multi-mapping peaks (force 1-1 mapping)
-  cat("Keeping max correlation for multi-mapping peaks ..\n")
-  GPTabFilt <- GPTabFilt %>% group_by(Peak) %>% filter(estimate==max(estimate))
+
+  # ------------ Remove multi-mapping peaks (force 1-1 mapping)
+  # NOTE: Because of the genome's 3D structure and chromatin loops, an enhancer can be physically close to the promoter regions of multiple genes, allowing it to influence their expression.
+  # cat("Keeping max correlation for multi-mapping peaks ..\n")
+  # GPTabFilt <- GPTabFilt %>% group_by(Peak) %>% filter(estimate==max(estimate))
   
   return(GPTabFilt)
 }

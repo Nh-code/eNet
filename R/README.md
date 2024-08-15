@@ -10,15 +10,13 @@ Five input files are needed for eNet:
 ```r
 pacman::p_load(Seurat,Signac,dplyr,IRanges,reshape2,TFBSTools,SummarizedExperiment,Matrix)
 options(future.globals.maxSize = 1e+12)
+source('./MainFunc.R')
+source('./utils.R')
 
 # ---------- Load scRNA matrix and scATAC matrix
 cre.mat <- readRDS("../data/cre.mat.Rds") # peak-cell matrix
-load("../data/rna.mat.Rdata") # scRNA matrix
+rna.mat <- readRDS("../data/rna.mat.Rds") # scRNA matrix
 # Note that the scATAC-seq and scRNA-seq matrix must have the same columns.
-load("../data/dcluster_coords.Rdata") # UMAP coordinates
-load("../data/metadata.Rdata") # Cell metadata
-source('./MainFunc.R')
-source('./utils.R')
 ```
 ### Step 2. Identifying the putative enhancer cluster (Node)
 ```r
@@ -82,7 +80,7 @@ plot.igraph(upgrade_graph(NetworkList[["G6PC3"]]))
 # To determine the threshold value of co-accssibility score, we advice to choose the value around quantile 90%-95% using quantile(subset(conns, coaccess>0)$coaccess,seq(0,1,0.05),na.rm = T)
 Networkinfo <- NetComplexity(conns=conns,  # enhancer-enhancer co-accessibilty calculated using Cicero
                              GPTab=GPTabFilt,   # a list of enhancer cluster, also the output of Step.2
-                             cutoff=0.1,  # the threshold value of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
+                             cutoff=0.2,  # the threshold value of co-accessibility score to determine whether the enhancer pairs are significantly co-accessible.
                              nCores=8 # How many cores to use
 )
 save(Networkinfo, file = "Networkinfo.Rdata")

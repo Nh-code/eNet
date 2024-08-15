@@ -233,3 +233,32 @@ NetworkMode <- function(Networkinfo=Networkinfo,  # Networkinfo is the output fi
   # OUTPUT
   return(Mode)
 }
+
+
+# ------------------ This step is to generate the umap embedding for CRE peak-matrix
+  GetHarmonyUMAP <- function(cre.mat, batch = NULL, return_img = FALSE){
+    signacObj <- CreateSeuratObject(counts = cre.mat)
+    signacObj$batch <- as.vector(batch)
+    # normalization, feature selection, dim reduction #
+    {
+      signacObj <- signacObj %>% RunTFIDF(verbose = F) %>% 
+        FindTopFeatures(verbose = F) %>% RunSVD(verbose = F) 
+      if (!is.null(batch)) {
+        signacObj <- signacObj %>% 
+          harmony::RunHarmony( group.by.vars = "batch", reduction.use = 'lsi', project.dim = F,verbose = F) %>% 
+          RunUMAP(reduction = 'harmony', dims = 2:25,verbose = F) 
+      }else{
+        signacObj <- signacObj %>% RunUMAP(reduction = 'lsi', dims = 2:25,verbose = F) 
+      }
+      
+      if (return_img) {
+        umap_plot <- DimPlot(signacObj,group.by = "batch",label = T)
+        ggplot2::ggsave("dcluster_coords.jpg", plot = umap_plot)
+      }
+    }
+
+    return(FetchData(signacObj,vars = c('umap_1',"umap_2"))) %>% setNames(c('UMAP_1','UMAP_1'))
+  }
+
+
+

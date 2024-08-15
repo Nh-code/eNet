@@ -256,8 +256,9 @@ NetworkMode <- function(Networkinfo=Networkinfo,  # Networkinfo is the output fi
         ggplot2::ggsave("dcluster_coords.jpg", plot = umap_plot)
       }
     }
-
-    return( FetchData(signacObj,vars = c('UMAP_1',"UMAP_2"))  )
+    
+    umap_coords <- Embeddings(signacObj, reduction = "umap") %>% data.frame %>% setNames(c("UMAP_1","UMAP_2"))
+    return( umap_coords )
   }
 
 

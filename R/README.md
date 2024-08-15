@@ -47,13 +47,16 @@ save(GPPair, file = 'GPPair.Rdata')
 ```
 ### Step 3. Identifying the predicted enhancer interactions (Edge)
 ```r
-library(monocle3)
-library(Signac)
-library(Seurat)
-library(cicero)
+# remotes::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
+pacman::p_load(Seurat,monocle3,cicero)
+load("multiomic_paircell.Rdata", verbose = T) ### load df.pair list object
+
+dcluster_coords <- GetHarmonyUMAP(cre.mat, batch = df.pair[["CRE.metaData"]][colnames(cre.mat),"Animal"],return_img = FALSE)
+save(dcluster_coords, file = 'dcluster_coords.Rdata')
+
 conns <- FindEdge(peaks.mat=cre.mat,  # peak-cell matrix
                   GPPair=GPPair, # A list of enhancer cluster, the output of Step.2
-                  cellinfo=metadata,  # A data frame containing attributes of individual cells.
+                  cellinfo=NULL,  # A data frame containing attributes of individual cells.
                   k=50, # Number of cells to aggregate per bin when generate an aggregated input CDS for cicero
                   coords=dcluster_coords, # A data frame with columns representing the coordinates of each cell in reduced dimension space (generally 2-3 dimensions).
                   genome='macFas5' # reference genome, must be one of "hg19", "mm10", "hg38", or "macFas5"

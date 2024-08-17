@@ -278,3 +278,31 @@ NetworkComplexity <- function(net=net,
   
   return(data)
 }
+
+
+#' Calculate Genome-wide Conservation Score for Position-Specific Regions
+#'
+#' This function calculates the phastCons conservation scores for a given set of genomic regions.
+#' It checks if the specified reference dataset is installed, installs it if necessary, and then computes the scores.
+#'
+#' @param GR A GRanges object representing the genomic regions of interest.
+#' @param ref A string specifying the name of the phastCons dataset to use. Default is "phastCons30way.UCSC.hg38".
+#' @return A GRanges object with an added metadata column `phastCons_Score` representing the conservation scores.
+#' @import GenomicScores
+#' @importFrom BiocManager install
+#' @export
+phastCons_Score <- function(GR, ref = "phastCons30way.UCSC.hg38") {
+    # Check if the specified reference dataset is installed, install if not
+    if (!requireNamespace(ref, quietly = TRUE)) {
+        BiocManager::install(ref)
+    }
+    
+    # Load the GenomicScores package and get the conservation scores
+    phast <- GenomicScores::getGScores(ref)
+    
+    # Calculate the phastCons scores for the provided genomic regions
+    # Rename the default score column to 'phastCons_Score'
+    score <- GenomicScores::gscores(phast, GR) %>% mutate(phastCons_Score = default) %>% select(-default)
+    
+    return({score})
+}
